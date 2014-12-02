@@ -1,6 +1,8 @@
 from Tkinter import *
 from tkFileDialog import askopenfilename
 
+import os
+
 class Application(Frame):
 
     def __init__(self, master):
@@ -47,7 +49,7 @@ class Application(Frame):
         self.urlLabel.grid(row = self.urlLabelRow, column = self.urlLabelCol, columnspan = self.urlLabelSpan)
 
         # Create Execute Button
-        self.executeButton = Button(self, text = "Execute", command = self.executeExternal)
+        self.executeButton = Button(self, text = "Execute", command = self.run3DViewer)
         self.executeButton.grid(row = self.executeButtonRow, column = self.executeButtonCol)
 
     def openFile(self):
@@ -55,9 +57,35 @@ class Application(Frame):
         self.urlLabel.configure(text = filename)
         self.url = YES
 
-    def executeExternal(self):
+    def run3DViewer(self):
+        pwd = os.getcwd()
+
+        self.messageLabel.configure(text = "Now Circling the hole")
+        # run 3D viewer
+        filename = pwd + '\\meshdrawing\\MeshDrawing.exe'
+        os.system(filename)        
+
+        #run connecting script
+        self.messageLabel.configure(text = "Now Connecting the curves")
+        ply = self.urlLabel.cget("text")
+        curve = ply[:-4] + ".curve"
+        filename = 'python ' + pwd + '\\scripts\\findHole.py ' + curve
+        os.system(filename)
+
+        #run TriMultPoly
+        self.messageLabel.configure(text = "Now Triangulate the curve")
+        cCurve = curve[:-6] + ".continous"
+        filename = pwd + '\\TriMultPoly\\TMP.exe ' + cCurve + ' 1 1 0 0 1 0 1 0'
+        print filename
+        os.system(filename)
+
+        self.messageLabel.configure(text = "Finished")
+
+    def run3DViewer2(self):
         if self.url:
             self.messageLabel.configure(text = "Now Executing")
+
+            #print self.urlLabel.cget("text")
         else:
             self.messageLabel.configure(text = "Please Select a File First")
 
