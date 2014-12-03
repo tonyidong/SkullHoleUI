@@ -60,6 +60,9 @@ class Application(Frame):
         self.areaButton = Button(self, text = "Get Area", command = self.getArea)
         self.areaButton.grid(padx = self.paddingX, pady = self.paddingY)
 
+        self.drawLineButton = Button(self, text = "Specify Hole", command = self.startDrawLineSoftware)
+        self.drawLineButton.grid(padx = self.paddingX, pady = self.paddingY)
+
 
     def openFile(self):
         filename = askopenfilename()
@@ -129,6 +132,9 @@ class Application(Frame):
         s = (d1 + d2 + d3) / 2
 
         return (s*(s-d1)*(s-d2)*(s-d3)) ** 0.5
+
+    def startDrawLineSoftware(self):
+        self.messageLabel.configure(text = "Draw line to Specify Area")
 
 
 
