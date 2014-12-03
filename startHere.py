@@ -11,21 +11,24 @@ class Application(Frame):
         # Initialize the Frame
         self.instructionLabelRow = 0
         self.instructionLabelCol = 10
-        self.instructionLabelSpan = 2
+        self.instructionLabelSpan = 1
 
         self.messageLabelRow = 1
         self.messageLabelCol = 10
-        self.messageLabelSpan = 2
+        self.messageLabelSpan = 1
 
         self.browseButtonRow = 2
         self.browseButtonCol = 10
 
         self.urlLabelRow = 3
         self.urlLabelCol = 10
-        self.urlLabelSpan = 2
+        self.urlLabelSpan = 1
 
         self.executeButtonRow = 4
         self.executeButtonCol = 10
+
+        self.paddingX = 5
+        self.paddingY = 10
 
 
         Frame.__init__(self, master)
@@ -35,27 +38,28 @@ class Application(Frame):
 
     def create_widgets(self):
         # Create Instruction Label
-        self.instructionLabel = Label(self, text = "Please Click on 'Browse File' to Select a File", font = "Helvetica 16 bold italic")
-        self.instructionLabel.grid(row = self.instructionLabelRow, column = self.instructionLabelCol, columnspan = self.instructionLabelSpan)
+        self.instructionLabel = Label(self, text = "Please Click on 'Browse File' to Select a File", font = "Helvetica 16 bold")
+        self.instructionLabel.grid(padx = self.paddingX, pady = self.paddingY, columnspan = self.instructionLabelSpan)
 
         # Create Message Label
-        self.messageLabel = Label(self, text = "Message Will Be Displayed here", fg = "blue")
-        self.messageLabel.grid(row = self.messageLabelRow, column = self.messageLabelCol, columnspan = self.messageLabelSpan)
+        self.messageLabel = Label(self, text = "Message Will Be Displayed here", fg = "green", height = 4, font = "Helvetica 14")
+        self.messageLabel.grid(padx = self.paddingX, pady = 5, columnspan = self.messageLabelSpan)
 
         # Create Browser Button
-        self.browseButton = Button(self, text = "Browse File", command = self.openFile, justify = CENTER)
-        self.browseButton.grid(row = self.browseButtonRow, column = self.browseButtonCol)
+        self.browseButton = Button(self, text = "Browse File", command = self.openFile, justify = CENTER, width = 16, height = 4)
+        self.browseButton.grid(padx = self.paddingX, pady = self.paddingY)
 
         # Create Url Label
-        self.urlLabel = Label(self, text = "No File Selected yet")
-        self.urlLabel.grid(row = self.urlLabelRow, column = self.urlLabelCol, columnspan = self.urlLabelSpan)
+        self.urlLabel = Message(self, text = "No File Selected yet", width = 300)
+        self.urlLabel.grid(padx = 10)
 
         # Create Execute Button
         self.executeButton = Button(self, text = "Execute", command = self.run3DViewer)
-        self.executeButton.grid(row = self.executeButtonRow, column = self.executeButtonCol)
+        self.executeButton.grid(padx = self.paddingX, pady = self.paddingY)
 
         self.areaButton = Button(self, text = "Get Area", command = self.getArea)
-        self.areaButton.grid(row = 7, column = 5)
+        self.areaButton.grid(padx = self.paddingX, pady = self.paddingY)
+
 
     def openFile(self):
         filename = askopenfilename()
@@ -130,8 +134,8 @@ class Application(Frame):
 
 root = Tk()
 root.title("Skull Holes Interface")
-# root.geometry("500x306")
-root.config(height = 500, width = 306, bg = "#C2C2D6")
+root.geometry("350x400")
+# root.config(height = 700, width = 400)
 
 app = Application(root)
 
