@@ -1,6 +1,8 @@
 from Tkinter import *
 from tkFileDialog import askopenfilename
 
+import numpy
+
 import os
 
 class Application(Frame):
@@ -52,6 +54,9 @@ class Application(Frame):
         self.executeButton = Button(self, text = "Execute", command = self.run3DViewer)
         self.executeButton.grid(row = self.executeButtonRow, column = self.executeButtonCol)
 
+        self.areaButton = Button(self, text = "Get Area", command = self.getArea)
+        self.areaButton.grid(row = 7, column = 5)
+
     def openFile(self):
         filename = askopenfilename()
         self.urlLabel.configure(text = filename)
@@ -88,6 +93,39 @@ class Application(Frame):
             #print self.urlLabel.cget("text")
         else:
             self.messageLabel.configure(text = "Please Select a File First")
+
+    def getArea(self):
+        fileObj = open(self.urlLabel["text"], 'r')
+        # print fileObj
+        pointList = []
+        self.sum = 0
+
+        for line in fileObj:
+            brokeDown = line.split()
+            if brokeDown[0] == "v":
+                pointList.append(brokeDown)
+            if brokeDown[0] == "f":
+                # print brokeDown
+                # print pointList
+
+                subArea = self.areaForTriangle(pointList[int(brokeDown[1])-1], pointList[int(brokeDown[2])-1], pointList[int(brokeDown[3])-1])
+                self.sum += float(subArea)
+
+        self.messageLabel.configure(text = self.sum)
+
+    def areaForTriangle(self, p1, p2, p3):
+        ary1 = numpy.array((float(p1[1]), float(p1[2]), float(p1[3])))
+        ary2 = numpy.array((float(p2[1]), float(p2[2]), float(p2[3])))
+        ary3 = numpy.array((float(p3[1]), float(p3[2]), float(p3[3])))
+
+        d1 = numpy.linalg.norm(ary1-ary2)
+        d2 = numpy.linalg.norm(ary2-ary3)
+        d3 = numpy.linalg.norm(ary3-ary1)
+
+        s = (d1 + d2 + d3) / 2
+
+        return (s*(s-d1)*(s-d2)*(s-d3)) ** 0.5
+
 
 
 root = Tk()
