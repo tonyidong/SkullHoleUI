@@ -52,12 +52,17 @@ class Application(Frame):
         self.areaButton = Button(self, text = "Get Area", \
             font = ("Arial Black", 16), \
             command = self.runScripts, width = 12, height = 2)
-        self.areaButton.grid(row = 2, column = 1, padx = self.padx, pady = self.pady)
+        self.areaButton.grid(row = 2, column = 1, rowspan = 2, padx = self.padx, pady = self.pady)
+
+        Label(self, text="Pixel Spacing", bg = "white", justify = LEFT, font = ("Arial Black", 16))\
+            .grid(row = 2, column = 0, padx = self.padx, pady = self.pady, sticky = NW)
+        self.pixelEntry = Entry(self)
+        self.pixelEntry.insert(0, "0.4140625")
+        self.pixelEntry.grid(row= 3, column = 0, padx = 15, pady = self.pady, sticky = NW)
 
         # Create Message Label
         self.messageLabel = Label(self, text = "Status: wait for user input", height = 4, font = "Helvetica 8", bg = "white")
         self.messageLabel.grid(row = 5, column = 0, columnspan = 2, sticky = W)
-
 
 
     def openFile(self):
@@ -80,7 +85,6 @@ class Application(Frame):
             )
             return 
 
-
         #run connecting script
         self.messageLabel.configure(text = "Status: now connecting the curves")
         curve = self.url
@@ -93,16 +97,61 @@ class Application(Frame):
         filename = self.pwd + '\\TriMultPoly\\TMP.exe ' + cCurve + ' 1 1 0 0 1 0 1 0'
         os.system(filename)
 
+        #get ratio
+        ply = curve[:-6] + ".ply"
+        ratio = self.getScaleRatio(ply)
+
         #get Area
         dynObj = cCurve + "_dyn.obj"
         area = self.getArea(dynObj)
 
+        spacing = float(self.pixelEntry.get())
+        area = (spacing * ratio)**2 * area
+
         tkMessageBox.showwarning(
         "Area", 
-        "The hole area is " + str(area)
+        "The hole area is " + str(area) + " mm"
         )
 
         self.messageLabel.configure(text = "Stauts: finished")
+
+    def getScaleRatio(self, url):
+        # Read in file
+        f = open(url)
+        lines = f.readlines()
+        f.close()
+
+        points = []
+        pointN = {} # neighbours of point
+        curL = 0
+
+        # Skip headers
+        while not lines[curL].startswith("end_header"):
+            curL = curL + 1
+        curL = curL + 1
+
+        maxL = [-1000, -1000, -1000]
+        minL = [1000, 1000, 1000]
+        # Get Points
+        i = 0
+        while len(lines[curL].split()) == 3:
+            entries = lines[curL].split()
+            for j in range(3):
+                if maxL[j] < float(entries[j]):
+                    maxL[j] = float(entries[j])
+                if minL[j] > float(entries[j]):
+                    minL[j] = float(entries[j])
+            curL = curL + 1
+            i = i + 1
+
+        ratio = 0
+        for i in range(3):
+            if ratio < (maxL[i]- minL[i]):
+                ratio = maxL[i] - minL[i]
+
+        return ratio
+
+
 
     def getArea(self, url):
         lines = open(url, 'r')
@@ -141,7 +190,7 @@ class Application(Frame):
 
 
 root = Tk()
-root.resizable(False, False)
+#root.resizable(False, False)
 root.title("Skull Holes Interface")
 
 root.update()
