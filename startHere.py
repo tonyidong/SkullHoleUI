@@ -57,7 +57,6 @@ class Application(Frame):
         Label(self, text="Pixel Spacing", bg = "white", justify = LEFT, font = ("Arial Black", 16))\
             .grid(row = 2, column = 0, padx = self.padx, pady = self.pady, sticky = NW)
         self.pixelEntry = Entry(self)
-        self.pixelEntry.insert(0, "0.4140625")
         self.pixelEntry.grid(row= 3, column = 0, padx = 15, pady = self.pady, sticky = NW)
 
         # Create Message Label
@@ -68,7 +67,9 @@ class Application(Frame):
     def openFile(self):
         filename = askopenfilename()
         self.url = filename
-        self.messageLabel.configure(text = "Status: " + filename + " is been selected")
+        shortName = filename.rsplit("/",1)
+        print shortName
+        self.messageLabel.configure(text = "Status: " + shortName[1]  + " is been selected")
 
     def runScripts(self):
         if not self.url:
@@ -105,7 +106,14 @@ class Application(Frame):
         dynObj = cCurve + "_dyn.obj"
         area = self.getArea(dynObj)
 
-        spacing = float(self.pixelEntry.get())
+        try:
+            spacing = float(self.pixelEntry.get())
+        except ValueError:
+            tkMessageBox.showwarning(
+            "Error", 
+            "Please input a valid number in pixel spacing"
+            )
+
         area = (spacing * ratio)**2 * area
 
         tkMessageBox.showwarning(
@@ -113,7 +121,7 @@ class Application(Frame):
         "The hole area is " + str(area) + " mm"
         )
 
-        self.messageLabel.configure(text = "Stauts: finished")
+        self.messageLabel.configure(text = "Status: Area is " + str(area) + " mm")
 
     def getScaleRatio(self, url):
         # Read in file
